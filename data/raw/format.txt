@@ -1,0 +1,5 @@
+There are 54 sensors, ignore other node ids. 
+First measurement at 2004-02-28 00:58:15.315133.
+
+Data format:
+time nodeid temperature humidity light voltage

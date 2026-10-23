@@ -1,3 +1,10 @@
+# generated datasets
+data/processed/*.csv
+
+# python environment
+.venv/
+__pycache__/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

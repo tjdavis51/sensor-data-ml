@@ -1,5 +1,6 @@
 # generated datasets
 data/processed/*.csv
+data/masked/*.csv
 
 # python environment
 .venv/

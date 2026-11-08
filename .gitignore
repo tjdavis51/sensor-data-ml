@@ -1,3 +1,6 @@
+# macos metadata
+.DS_Store
+
 # generated datasets
 data/processed/*.csv
 data/masked/*.csv

@@ -1,0 +1,3 @@
+results/**/launch.json
+results/**/*.log
+results/**/*.tmp

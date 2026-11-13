@@ -1,0 +1,45 @@
+{
+  "arguments": {
+    "mode": "train",
+    "epochs": 60,
+    "batch_size": 512,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.001,
+    "output_dir": "src/models/neural_network/results/hidden64_wd0.001_epochs60_seed43",
+    "patience": 8,
+    "seed": 43,
+    "hidden_sizes": [
+      64
+    ],
+    "lr_patience": 3
+  },
+  "best_val_mse": 0.03471536561846733,
+  "epochs_completed": 47,
+  "input_size": 1640,
+  "architecture": [
+    1640,
+    64,
+    4
+  ],
+  "torch_version": "2.9.0",
+  "numpy_version": "2.2.6",
+  "pandas_version": "2.3.3",
+  "selection": "minimum validation MSE in training-standardized units",
+  "scheduler": {
+    "name": "ReduceLROnPlateau",
+    "factor": 0.5,
+    "non_improving_epochs": 3,
+    "threshold": 0.0
+  },
+  "shared_mask": {
+    "mask_rate": 0.1,
+    "random_seed": 42,
+    "masking_strategy": "random",
+    "measurement_columns": [
+      "temperature",
+      "humidity",
+      "light",
+      "voltage"
+    ]
+  }
+}

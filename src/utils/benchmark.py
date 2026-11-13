@@ -35,7 +35,7 @@ OUTPUT_DIR = "results"
 MODEL_NAMES = [
     "linear_regression",
     "random_forest",
-    "mlp",
+    "neural_network",
     "gru",
     "gnn",
 ]

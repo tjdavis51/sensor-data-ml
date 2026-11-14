@@ -29,14 +29,19 @@ def save_csv(frame, path):
     temporary.replace(path)
 
 
+def predict_targets(model, windows, indices):
+    inputs = torch.from_numpy(windows.inputs(indices))
+    outputs = model(inputs)
+    return outputs[torch.arange(len(indices)), windows.features[indices]]
+
+
 def predict(model, windows, batch_size):
     model.eval()
     outputs = []
     with torch.inference_mode():
         for start in range(0, len(windows), batch_size):
             indices = np.arange(start, min(start + batch_size, len(windows)))
-            values = model(torch.from_numpy(windows.inputs(indices)))
-            selected = values[torch.arange(len(indices)), windows.features[indices]]
+            selected = predict_targets(model, windows, indices)
             outputs.append(selected.numpy())
     result = np.concatenate(outputs)
     if not np.isfinite(result).all():
@@ -74,7 +79,6 @@ def train(args, output_dir=OUTPUT):
         val_labels -= val_reference
     model = SensorMLP(INPUT_SIZE, args.hidden_sizes)
     if args.voltage_reference:
-        # Start the voltage prediction exactly at the reference.
         with torch.no_grad():
             model.network[-1].weight[3].zero_()
             model.network[-1].bias[3].zero_()
@@ -83,8 +87,6 @@ def train(args, output_dir=OUTPUT):
     )
     scheduler = None
     if args.lr_patience:
-        # PyTorch reduces after patience + 1 bad epochs. Subtract one to honor
-        # the CLI's literal count, using the same strict improvement as selection.
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             optimizer, mode="min", factor=0.5, patience=args.lr_patience - 1,
             threshold=0.0, threshold_mode="abs", eps=0.0,
@@ -99,11 +101,9 @@ def train(args, output_dir=OUTPUT):
         order = rng.permutation(len(training))
         for start in range(0, len(order), args.batch_size):
             indices = order[start:start + args.batch_size]
-            inputs = torch.from_numpy(training.inputs(indices))
             expected = torch.from_numpy(labels[indices])
             optimizer.zero_grad()
-            outputs = model(inputs)
-            selected = outputs[torch.arange(len(indices)), training.features[indices]]
+            selected = predict_targets(model, training, indices)
             loss = torch.mean((selected - expected) ** 2)
             if not torch.isfinite(loss):
                 raise ValueError("Nonfinite training loss")
@@ -175,7 +175,6 @@ def evaluate(split, batch_size, output_dir=OUTPUT):
     result = pd.DataFrame({"target_id": windows.target_ids, "prediction": predictions})
     filename = "predictions.csv" if split == "test" else "val_predictions.csv"
     save_csv(result, output_dir / filename)
-    # Read final labels only after all predictions have been generated and saved.
     answers = pd.read_csv(ROOT / "data/masked" / f"{split}_answers.csv")
     matched = evaluation.validate_predictions(answers, result)
     metrics, score = evaluation.evaluate_predictions(matched, evaluation.get_training_std())
@@ -210,7 +209,7 @@ def main():
         parser.error("Epochs, batch size, patience, and learning rate must be positive")
     if not np.isfinite(args.weight_decay) or args.weight_decay < 0:
         parser.error("Weight decay must be finite and nonnegative")
-    os.chdir(ROOT)  # Shared evaluation paths are relative to the repository root.
+    os.chdir(ROOT)
     output_dir = Path(args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     if args.mode in ("train", "both"):

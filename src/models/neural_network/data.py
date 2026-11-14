@@ -41,7 +41,6 @@ class MaskedWindows:
         self.times = time_indices
         if self.available[time_indices, sensor_indices, feature_indices].any():
             raise ValueError("Target measurement is visible in model inputs")
-        # This is the same centered, boundary-clamped window used by the GRU.
         self.starts = np.clip(time_indices - WINDOW_LENGTH // 2, 0, len(times) - WINDOW_LENGTH)
         self.positions = time_indices - self.starts
 
@@ -54,15 +53,12 @@ class MaskedWindows:
         values = self.values[time_indices[:, :, None], sensors[:, None, :]]
         flags = self.available[time_indices[:, :, None], sensors[:, None, :]]
         windows = np.concatenate([values, flags.astype(np.float32)], axis=3)
-        # The GRU selects an output at the target step. Supply that location to
-        # the MLP explicitly, including windows clamped at either split boundary.
         positions = np.eye(WINDOW_LENGTH, dtype=np.float32)[self.positions[indices]]
         return np.concatenate([windows.reshape(len(indices), -1), positions], axis=1)
 
 
 def load_windows(root, split, sensor_ids, neighbors, means, stds):
     frame = pd.read_csv(root / "data/masked" / f"{split}_masked.csv")
-    # Never read answer values when constructing model inputs, including test.
     targets = pd.read_csv(
         root / "data/masked" / f"{split}_answers.csv",
         usecols=["target_id", "time", "nodeid", "feature"],

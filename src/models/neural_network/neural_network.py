@@ -5,7 +5,6 @@ from pathlib import Path
 
 from torch import nn
 
-# Support both direct execution from the repository root and python -m.
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 

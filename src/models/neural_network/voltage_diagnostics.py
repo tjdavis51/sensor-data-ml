@@ -117,7 +117,6 @@ def main():
     errors["below_sensor_training_min"] = errors.true_value < errors.sensor_training_min
     errors["above_sensor_training_max"] = errors.true_value > errors.sensor_training_max
     errors.to_csv(OUTPUT / "voltage_residuals.csv", index=False)
-    # Answer values are used here only for post-evaluation support diagnostics.
     summarize(errors, ["split", "below_sensor_training_min"], training_std).to_csv(
         OUTPUT / "training_range_support.csv", index=False
     )

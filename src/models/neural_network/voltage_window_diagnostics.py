@@ -55,7 +55,6 @@ def main():
             with torch.inference_mode():
                 predictions = model(torch.from_numpy(inputs))[:, 3].numpy() * stds[3] + means[3]
             np.testing.assert_allclose(predictions, rows.prediction, atol=2e-6, rtol=0)
-            # Inspect exactly the standardized values and flags passed to the model.
             tensor = inputs[:, :1600].reshape(-1, WINDOW_LENGTH, 5, 8)
             flags = tensor[:, :, :, 7].astype(bool)
             voltages = tensor[:, :, :, 3] * stds[3] + means[3]

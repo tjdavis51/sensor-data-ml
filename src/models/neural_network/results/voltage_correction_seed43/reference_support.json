@@ -1,0 +1,12 @@
+{
+  "train": {
+    "voltage_targets": 117195,
+    "with_same_sensor": 117188,
+    "without_same_sensor": 7
+  },
+  "val": {
+    "voltage_targets": 21606,
+    "with_same_sensor": 21606,
+    "without_same_sensor": 0
+  }
+}

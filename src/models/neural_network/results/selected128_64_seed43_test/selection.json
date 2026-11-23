@@ -1,0 +1,15 @@
+{
+  "architecture": [
+    1640,
+    128,
+    64,
+    4
+  ],
+  "source_directory": "src/models/neural_network/results/hidden128_64_wd0.0001_epochs60_seed43",
+  "seed": 43,
+  "epoch": 58,
+  "validation_mse": 0.019180238246917725,
+  "selection_rule": "Recipe selected by lowest mean validation MSE across matched seeds, then checkpoint selected by lowest validation MSE within that recipe.",
+  "checkpoint_sha256": "c76f7c6a7f9808f02de167602f4749111920f39525fc78733347aac383b5e9f2",
+  "test_history": "The test interval was previously evaluated for earlier experiments. This checkpoint was selected using validation results before its test evaluation."
+}

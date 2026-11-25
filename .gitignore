@@ -5,6 +5,25 @@
 data/processed/*.csv
 data/masked/*.csv
 
+# retain compact anomaly results and keep bulk detector output local
+/anomaly_detection/results/*
+!/anomaly_detection/results/*_summary.txt
+!/anomaly_detection/results/injection/
+/anomaly_detection/results/injection/*
+!/anomaly_detection/results/injection/labels.csv
+!/anomaly_detection/results/injection/injected_detections.csv
+!/anomaly_detection/results/injection/reading_comparison.csv
+!/anomaly_detection/results/injection/episode_comparison.csv
+
+# retain the latest interpolation predictions and ignore experiment intermediates
+/src/models/gru/results/interpolation/*
+!/src/models/gru/results/interpolation/predictions.csv
+
+# keep neural network launch settings and transient output local
+/src/models/neural_network/results/**/launch.json
+/src/models/neural_network/results/**/*.log
+/src/models/neural_network/results/**/*.tmp
+
 # python environment
 .venv/
 __pycache__/

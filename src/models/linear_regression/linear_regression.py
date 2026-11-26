@@ -26,7 +26,8 @@ def nearest_observed(masked, target, rows, max_gap):
     # they were, or NaN if nothing is observed within the period
 
     # table with 1 row per 30 second timestamp, and 1 column per sensor, NaN marked as missing
-    wide = masked.pivot_table(index="time", columns="nodeid", values=target)
+    # pivot preserves sensors and timestamps whose target readings are all missing.
+    wide = masked.pivot(index="time", columns="nodeid", values=target)
 
     # full time grid so 1 row = 1 30 second step
     grid = np.arange(int(wide.index.min()), int(wide.index.max()) + STEP, STEP)
@@ -47,6 +48,8 @@ def nearest_observed(masked, target, rows, max_gap):
     # locate each target row in the grid: r = row (time step), c = column (sensor)
     r = wide.index.get_indexer(rows["time"])
     c = wide.columns.get_indexer(rows["nodeid"])
+    if (r < 0).any() or (c < 0).any():
+        raise ValueError("Unknown target time or sensor")
     values = wide.to_numpy()
     prev_idx, next_idx = before[r, c], after[r, c]
     # how many steps away the neighbors are (NaN if none exists)

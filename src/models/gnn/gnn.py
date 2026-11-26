@@ -1,29 +1,9 @@
-# spatio-temporal graph neural network for reconstructing missing sensor
-# measurements using both temporal history and the sensor graph
+"""Spatiotemporal reconstruction with temporal convolutions and a fixed sensor graph.
 
-# general layout:
-# graph: one node per sensor, edges to the k spatially nearest sensors
-# node input: a window of 40 timesteps by 8 features
-#   4 measurements (missing values set to zero) and 4 availability flags,
-#   the same kind of input the GRU uses
-# encoder: linear layer from 8 features to the hidden size
-# 3 spatio-temporal blocks, each one:
-#   temporal convolution: mixes information across nearby timesteps for each sensor
-#   graph convolution: mixes information across neighboring sensors at each timestep
-# linear output layer: hidden size to the 4 predicted measurements
-# loss: masked MSE on artificially hidden values (same idea as the GRU)
-
-# graph convolution (GCN, Kipf & Welling 2017):
-# H' = A_hat * H * W
-# H is the (nodes x features) matrix, W is a learned weight matrix
-# A_hat = D^-1/2 (A + I) D^-1/2 is the normalized adjacency matrix
-# multiplying by A_hat replaces each node's features with a weighted average
-# of itself and its neighbors, so each layer lets information travel one hop
-# with 3 blocks a sensor can use information from sensors up to 3 hops away
-
-# the main difference from the GRU: the GRU reconstructs one sensor at a time from
-# a fixed list of 4 neighbors, the GNN processes every sensor at once and
-# learns how much to trust its neighbors through the graph
+Each node receives four measurements and four availability flags per timestep.
+Three blocks mix time and graph context; training loss uses artificially hidden cells.
+Distance-weighted graph edges are fixed, while feature transforms are learned.
+"""
 
 import os
 import argparse
